@@ -1,0 +1,164 @@
+{% extends "headers/base.html" %}
+
+{% load static %}
+
+{% block body %}
+<script src="{% static 'js/form.js' %}"></script>
+    <button class="card add-btn"  data-toggle="modal" data-target="#form">
+        +
+    </button>
+
+    <div class="text-center">
+    {% for item in dishes %}
+    
+        <div class="modal fade" id="change-{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width: 200em; max-width: 90%;">
+            <div class="modal-dialog" role="document" style="width: 200em; max-width: 90%;">
+              <div class="modal-content" style="width: 200em; max-width: 90%;">
+                <div class="modal-header" style="width: 100%">
+                  <h5 class="modal-title" id="exampleModalLabel">Edit Dish</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="/change/dish/{{item.id}}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input placeholder="Name" name="name" class="form-control" value="{{item.name}}" />
+                        <textarea placeholder="Description" name="description" class="form-control"> {{item.description}}</textarea>
+                        
+                        <div id="tagContainer-{{item.id}}" style="display: block;">
+        
+                        </div>
+        
+                        <button class="tag-btn" onclick="tag()" type="button" style="display: block;">tag+</button>
+                        <input style="display: none;" id="tags-{{item.id}}" name="tags" />
+        
+                        <div class="onnaDemForms" id="tagForm-{{item.id}}" style="display: none;">
+                            <span>@<input type="text" id="tagFormName-{{item.id}}" placeholder="Tag Name" /></span>
+                            <button onclick="return tagFormSubmit()" type="button" class="addTagButton">add tag</button>
+                        </div>
+        
+                        <br> 
+        
+                        <div id="ingridiantContainer-{{item.id}}">
+        
+                        </div>
+        
+                        <button class="tag-btn" onclick="ingridiantCall()" type="button">ingrediant+</button>
+                        <input style="display: none;" id="ingridiants-{{item.id}}" name="ingridiants" />
+                        <div class="iFuckingHateCSSAndEverythingAboutIt" id="ingridiantForm-{{item.id}}">
+                            <span><input type="text" id="ingridiantFormName-{{item.id}}" placeholder="Ingridiant Name" /></span>
+                            <button onclick=" ingridantFormSubmit()" type="button" class="addIngridiantButton">add ingridiant</button>
+                        </div>
+                        <br>
+        
+        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" type="button" onclick="redirect('/delete/dish/{{item.id}}');" >Delete</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        
+    {% endfor %}
+    </div>
+
+    {% for item in dishes %}
+    <div class="card" style="width: 18rem;">
+        <button class="card edit-btn"  data-toggle="modal" data-target="#change-{{item.id}}" style="float: right;">
+            ...
+        </button>
+        <div class="card-body">
+            <div class="card-title">
+                {{ item.name }}
+            </div>
+        
+            <div class="lead">
+                {{ item.description }}
+            </div>
+            <br>
+            {% for tag in item.tags.all %}
+                {% if not tag.name == "" %}
+                <button class="tag-btn" style="margin-bottom: 5px;">{{tag.name}}</button>
+                <script>addTagDish("{{item.id}}", "{{tag.name}}")</script>
+                {% endif %}
+            {% endfor %}
+            <br><hr>
+            {% if item.ingredients.all is defined %}
+                No ingredients listed
+            {% endif %}
+            {% for ingrediant in item.ingredients.all %}
+                {% if not ingrediant.name == "" %}
+                <button class="tag-btn" style="margin-bottom: 5px;">{{ingrediant.name}}</button>
+                <script>addIngridiantDish("{{item.id}}", "{{ingrediant.name}}")</script>
+                {% endif %}
+            {% endfor %}
+            <br>
+        </div>
+    </div>
+    {% endfor %}
+
+
+<!-- Modal -->
+<div class="text-center">
+<div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width: 200em; max-width: 90%;">
+    <div class="modal-dialog" role="document" style="width: 200em; max-width: 90%;">
+      <div class="modal-content" style="width: 200em; max-width: 90%;">
+        <div class="modal-header" style="width: 100%">
+          <h5 class="modal-title" id="exampleModalLabel">New Dish</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="POST" action="/add/dish">
+            {% csrf_token %}
+            <div class="modal-body">
+                <input placeholder="Name" name="name" class="form-control" />
+                <textarea placeholder="Description" name="description" class="form-control" ></textarea>
+                
+                <div id="tagContainer">
+
+                </div>
+
+                <button class="tag-btn" onclick="tag()" type="button">tag+</button>
+                <input style="display: none;" id="tags" name="tags" />
+
+                <div class="onnaDemForms" id="tagForm" style="display: none;">
+                    <span>@<input type="text" id="tagFormName" placeholder="Tag Name" /></span>
+                    <button onclick="return tagFormSubmit()" type="button" class="addTagButton">add tag</button>
+                </div>
+
+                <br> 
+
+                <div id="ingridiantContainer">
+
+                </div>
+
+                <button class="tag-btn" onclick="ingridiantCall()" type="button">ingrediant+</button>
+                <input style="display: none;" id="ingridiants" name="ingridiants" />
+                <div class="iFuckingHateCSSAndEverythingAboutIt" id="ingridiantForm">
+                    <span><input type="text" id="ingridiantFormName" placeholder="Ingridiant Name" /></span>
+                    <button onclick=" ingridantFormSubmit()" type="button" class="addIngridiantButton">add ingridiant</button>
+                </div>
+                <br>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body %}
+
+{% block html %}
+    
+
+{% endblock html %}
