@@ -29,7 +29,7 @@ urlpatterns = [
     path('change/dish/<int:id>', frontend.editDish),
     path('delete/dish/<int:id>', frontend.deleteDish),
 
-
+    path('api/get/dish', api.getDish),
     path('api/change/dish/<int:id>/', api.editDish),
     path('api/delete/dish/<int:id>/', api.deleteDish),
     path('api/add/dish/', api.addDish),

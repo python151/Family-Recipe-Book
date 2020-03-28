@@ -4,7 +4,7 @@ from django.core import serializers
 
 
 # Create your views here.
-def editDish(request, id):
+def getDish(request, id):
     meals = Meal.objects.all()
     data = serializers('json', meals)
     return HttpResponse(request, data)
